@@ -3,7 +3,7 @@ const { google } = require('googleapis');
 const path = require('path');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-const CREDENTIALS_PATH = path.join(__dirname, '../credentials.json');
+const CREDENTIALS_PATH = path.join(__dirname, '../connectionFile.json');
 
 async function getSheets() {
   try {
