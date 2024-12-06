@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const { getSheets } = require('../utils/googleSheets');
 const auth = require('../middleware/auth');
-const ExcelJS = require('exceljs')
 
 module.exports = function(io) {
   // Create a new task (admin only)
@@ -149,50 +148,6 @@ module.exports = function(io) {
       res.status(500).send('Server error');
     }
   });
-  router.get('/download', auth, async (req, res) => {
-    try {
-      const sheets = await getSheets();
-      const response = await sheets.spreadsheets.values.get({
-        spreadsheetId: process.env.GOOGLE_SHEETS_ID,
-        range: 'Tasks!A:H',
-      });
-  
-      const tasks = response.data.values || [];
-  
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('Tasks');
-  
-      worksheet.columns = [
-        { header: 'Inward No', key: 'inwardNo', width: 15 },
-        { header: 'Subject', key: 'subject', width: 30 },
-        { header: 'Description', key: 'description', width: 50 },
-        { header: 'Start Date', key: 'startDate', width: 15 },
-        { header: 'End Date', key: 'endDate', width: 15 },
-        { header: 'Assigned To', key: 'assignedTo', width: 30 },
-        { header: 'Status', key: 'status', width: 15 },
-      ];
-  
-      tasks.forEach(task => {
-        worksheet.addRow({
-          inwardNo: task[0],
-          subject: task[1],
-          description: task[2],
-          startDate: task[3],
-          endDate: task[4],
-          assignedTo: task[5],
-          status: task[6],
-        });
-      });
-  
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=tasks.xlsx');
-  
-      await workbook.xlsx.write(res);
-      res.end();
-    } catch (err) {
-      console.error('Error downloading tasks:', err.message);
-      res.status(500).send('Server error');
-    }
-  });
+
   return router;
 };

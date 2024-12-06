@@ -4,13 +4,13 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { getSheets } = require('../utils/googleSheets');
-const dotenv = require('dotenv');
-dotenv.config();
+const dotenv = require('dotenv')
+dotenv.config()
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
-const USERS_RANGE = 'Users!A:D';
 console.log(SPREADSHEET_ID);
 
+const USERS_RANGE = 'Users!A:D';
 
 // Register user
 router.post('/register', async (req, res) => {
@@ -23,8 +23,6 @@ router.post('/register', async (req, res) => {
       spreadsheetId: SPREADSHEET_ID,
       range: USERS_RANGE,
     });
-    
-    
     const users = response.data.values || [];
     if (users.some(user => user[1] === email)) {
       return res.status(400).json({ msg: 'User already exists' });
